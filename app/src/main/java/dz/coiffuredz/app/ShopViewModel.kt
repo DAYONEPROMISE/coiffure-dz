@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -23,12 +22,7 @@ class ShopViewModel(app: Application) : AndroidViewModel(app) {
     val clients = dao.clients()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val dayList = combine(day, dao.services()) { d, _ -> d }
-        .let { dayFlow ->
-            combine(dayFlow, services) { d, _ -> d }
-        }
-
-    // Simpler: observe via function in UI with collectAsState on dao flow keyed by day.
+    // Observe via function in UI with collectAsState on dao flow keyed by day.
     fun appointmentsFor(d: Long) = dao.dayAppointments(d)
     fun historyFor(clientId: Long) = dao.clientHistory(clientId)
 
